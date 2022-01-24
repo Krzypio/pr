@@ -31,19 +31,19 @@ int main(int argc, char* argv[])
 	//TIME COUNT
 	clock_t duration = clock();
 
-	//int primeArraySize = metodaDzielacaSekwencyjna(arrayBoolean, arraySize, min);
+	int primeArraySize = metodaDzielacaSekwencyjna(arrayBoolean, arraySize, min);
 	//int primeArraySize = metodaDzielacaRownolegla(arrayBoolean, arraySize, min);
 	//int primeArraySize = metodaSitaSekwencyjna(arrayBoolean, arraySize, min, max);
 	//int primeArraySize = metodaSitaRownoleglaDomenowa(arrayBoolean, arraySize, min, max);
-	int primeArraySize = metodaSitaRownoleglaFunkcyjna(arrayBoolean, arraySize, min, max);
+	//int primeArraySize = metodaSitaRownoleglaFunkcyjna(arrayBoolean, arraySize, min, max);
 
 	duration = clock() - duration;
 	printf("It took me %d clicks (%f seconds).\n", duration, ((float)duration) / CLOCKS_PER_SEC);
 	//TIME COUNT
 
 	int* primeArray = convertBoolToIntPrimeArray(arrayBoolean, arraySize, primeArraySize, min);
-	printf("Licznik liczb pierwszych w przedziale <%d;%d>: %d\n", min, max, primeArraySize);
-	//printArrayInt(primeArray, primeArraySize);
+	printf("Count of primary numbers in range <%d;%d>: %d\n", min, max, primeArraySize);
+	printArrayInt(primeArray, primeArraySize);
 }
 
 int isPrime(int number) {
@@ -136,7 +136,7 @@ int metodaSitaSekwencyjna(bool*& arrayBoolean, int arraySize, int min, int max) 
 	bool* dividers = new bool[dividersSize];
 	computeDividers(dividers, dividersSize);
 
-	// F i l t e r non−prime d i v i d e r s
+	// Filter non-prime from dividers
 	for (int i = 2; i < dividersSize; i++) {
 		for (int j = i * i; j < dividersSize; j = j + i) {
 			if (true == dividers[j]) {
@@ -145,7 +145,7 @@ int metodaSitaSekwencyjna(bool*& arrayBoolean, int arraySize, int min, int max) 
 		}//for j
 	}//for i
 
-	// F i l t e r non−prime numbers
+	// Filter non-prime from arrayBoolean
 	for (int i = 2; i < dividersSize; i++) {
 		if (dividers[i]) {
 			int j = i * floor((min - 1) / i);
@@ -178,7 +178,7 @@ int metodaSitaRownoleglaDomenowa(bool*& arrayBoolean, int arraySize, int min, in
 		int minIndex = min + threadId * arraySize / threadMax;//
 		int maxIndex = min + (threadId + 1) * arraySize / threadMax;//
 
-		// F i l t e r non−prime numbers
+		// Filter non-prime from arrayBoolean
 		for (int i = 2; i < dividersSize; i++) {
 			if (dividers[i]) {
 				int j = i * floor((minIndex - 1) / i);//
@@ -205,19 +205,10 @@ int metodaSitaRownoleglaFunkcyjna(bool*& arrayBoolean, int arraySize, int min, i
 	bool* dividers = new bool[dividersSize];
 	computeDividers(dividers, dividersSize);
 
-	// F i l t e r non−prime d i v i d e r s
-	for (int i = 2; i < dividersSize; i++) {
-		for (int j = i * i; j < dividersSize; j = j + i) {
-			if (true == dividers[j]) {
-				dividers[j] = false;
-			}//if
-		}//for j
-	}//for i
-
 #pragma omp parallel
 	{
 		int localNonPrimeCount = 0;
-		// F i l t e r non−prime numbers
+		// Filter non-prime from arrayBoolean
 #pragma omp for schedule(dynamic)
 		for (int i = 2; i < dividersSize; i++) {
 			if (dividers[i]) {
