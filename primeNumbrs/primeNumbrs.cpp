@@ -23,17 +23,16 @@ void printArrayInt(int* arrayInt, int arraySize);
 int main(int argc, char* argv[])
 {
 	const int min = 0;
-	const int max = 100'000;
+	const int max = 1'000'000;
 	const int arraySize = max - min + 1;
 	bool* arrayBoolean = new bool[arraySize];
-
 
 	//TIME COUNT
 	clock_t duration = clock();
 
-	int primeArraySize = metodaDzielacaSekwencyjna(arrayBoolean, arraySize, min);
+	//int primeArraySize = metodaDzielacaSekwencyjna(arrayBoolean, arraySize, min);
 	//int primeArraySize = metodaDzielacaRownolegla(arrayBoolean, arraySize, min);
-	//int primeArraySize = metodaSitaSekwencyjna(arrayBoolean, arraySize, min, max);
+	int primeArraySize = metodaSitaSekwencyjna(arrayBoolean, arraySize, min, max);
 	//int primeArraySize = metodaSitaRownoleglaDomenowa(arrayBoolean, arraySize, min, max);
 	//int primeArraySize = metodaSitaRownoleglaFunkcyjna(arrayBoolean, arraySize, min, max);
 
@@ -136,15 +135,6 @@ int metodaSitaSekwencyjna(bool*& arrayBoolean, int arraySize, int min, int max) 
 	bool* dividers = new bool[dividersSize];
 	computeDividers(dividers, dividersSize);
 
-	// Filter non-prime from dividers
-	for (int i = 2; i < dividersSize; i++) {
-		for (int j = i * i; j < dividersSize; j = j + i) {
-			if (true == dividers[j]) {
-				dividers[j] = false;
-			}//if
-		}//for j
-	}//for i
-
 	// Filter non-prime from arrayBoolean
 	for (int i = 2; i < dividersSize; i++) {
 		if (dividers[i]) {
@@ -207,7 +197,7 @@ int metodaSitaRownoleglaFunkcyjna(bool*& arrayBoolean, int arraySize, int min, i
 
 #pragma omp parallel
 	{
-		int localNonPrimeCount = 0;
+
 		// Filter non-prime from arrayBoolean
 #pragma omp for schedule(dynamic)
 		for (int i = 2; i < dividersSize; i++) {
