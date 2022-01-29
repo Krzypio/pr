@@ -444,7 +444,7 @@ void zbadajMetodaSitaRownoleglaFunkcyjna(int min, int max, int numberOfThreads, 
 
 void wypiszNaglowekPelny() {
 	printf("methodName;<lowerBound,upperBound>;numberOfThreads;primeCounter;");
-	printf("czasPrzetwarzania[ms];przyspieszeniePR;predkoscPrztwarzania[szt/s];efektywnoscPR;\n");
+	printf("czasPrzetwarzania[ms];przyspieszeniePR;predkoscPrztwarzania[szt/ms];efektywnoscPR;\n");
 }
 
 void wypiszWynik(const char methodName[], int lowerBound, int upperBound, int threadNumber, int primeCounter, clock_t methodClock, clock_t referenceClock) {
