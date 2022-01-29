@@ -33,7 +33,12 @@ void wykonajAnalize(int lowerBound, int upperBound);
 
 int main(int argc, char* argv[])
 {
-	wykonajAnalize(2, 50'000'000);
+	clock_t clockCliks = clock();
+
+	wykonajAnalize(2, 10'000'000);
+
+	clockCliks = clock() - clockCliks;
+	printf("Analize przeprowadzono w czasie %f [sec];\n", ((float)clockCliks) / CLOCKS_PER_SEC);
 
 	/*int min = 0;
 	int max = 100'000;
@@ -70,13 +75,56 @@ void wykonajAnalize(int lowerBound, int upperBound){
 	//Wariant A
 	min = lowerBound;
 	max = upperBound;
-	/*clock_t referenceClockDzielenie = zbadajMetodaDzielacaSekwencyjna(min, max);
+	clock_t referenceClockDzielenie = zbadajMetodaDzielacaSekwencyjna(min, max);
+
 	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 1, referenceClockDzielenie);
 	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 2, referenceClockDzielenie);
 	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 4, referenceClockDzielenie);
-	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 8, referenceClockDzielenie);*/
+	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 8, referenceClockDzielenie);
 
 	clock_t referenceClockSito = zbadajMetodaSitaSekwencyjna(min, max);
+	zbadajMetodaSitaRownoleglaDomenowa(min, max, numberOfThreads = 1, referenceClockSito);
+	zbadajMetodaSitaRownoleglaDomenowa(min, max, numberOfThreads = 2, referenceClockSito);
+	zbadajMetodaSitaRownoleglaDomenowa(min, max, numberOfThreads = 4, referenceClockSito);
+	zbadajMetodaSitaRownoleglaDomenowa(min, max, numberOfThreads = 8, referenceClockSito);
+
+	zbadajMetodaSitaRownoleglaFunkcyjna(min, max, numberOfThreads = 1, referenceClockSito);
+	zbadajMetodaSitaRownoleglaFunkcyjna(min, max, numberOfThreads = 2, referenceClockSito);
+	zbadajMetodaSitaRownoleglaFunkcyjna(min, max, numberOfThreads = 4, referenceClockSito);
+	zbadajMetodaSitaRownoleglaFunkcyjna(min, max, numberOfThreads = 8, referenceClockSito);
+	
+	//Wariant B
+	min = lowerBound;
+	max = upperBound/2;
+	referenceClockDzielenie = zbadajMetodaDzielacaSekwencyjna(min, max);
+	referenceClockSito = zbadajMetodaSitaSekwencyjna(min, max);
+
+	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 1, referenceClockDzielenie);
+	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 2, referenceClockDzielenie);
+	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 4, referenceClockDzielenie);
+	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 8, referenceClockDzielenie);
+
+	zbadajMetodaSitaRownoleglaDomenowa(min, max, numberOfThreads = 1, referenceClockSito);
+	zbadajMetodaSitaRownoleglaDomenowa(min, max, numberOfThreads = 2, referenceClockSito);
+	zbadajMetodaSitaRownoleglaDomenowa(min, max, numberOfThreads = 4, referenceClockSito);
+	zbadajMetodaSitaRownoleglaDomenowa(min, max, numberOfThreads = 8, referenceClockSito);
+
+	zbadajMetodaSitaRownoleglaFunkcyjna(min, max, numberOfThreads = 1, referenceClockSito);
+	zbadajMetodaSitaRownoleglaFunkcyjna(min, max, numberOfThreads = 2, referenceClockSito);
+	zbadajMetodaSitaRownoleglaFunkcyjna(min, max, numberOfThreads = 4, referenceClockSito);
+	zbadajMetodaSitaRownoleglaFunkcyjna(min, max, numberOfThreads = 8, referenceClockSito);
+
+	//Wariant C
+	min = upperBound/2;
+	max = upperBound;
+	referenceClockDzielenie = zbadajMetodaDzielacaSekwencyjna(min, max);
+	referenceClockSito = zbadajMetodaSitaSekwencyjna(min, max);
+
+	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 1, referenceClockDzielenie);
+	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 2, referenceClockDzielenie);
+	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 4, referenceClockDzielenie);
+	zbadajMetodaDzielacaRownolegla(min, max, numberOfThreads = 8, referenceClockDzielenie);
+
 	zbadajMetodaSitaRownoleglaDomenowa(min, max, numberOfThreads = 1, referenceClockSito);
 	zbadajMetodaSitaRownoleglaDomenowa(min, max, numberOfThreads = 2, referenceClockSito);
 	zbadajMetodaSitaRownoleglaDomenowa(min, max, numberOfThreads = 4, referenceClockSito);
@@ -276,7 +324,7 @@ int metodaSitaRownoleglaFunkcyjna(bool*& arrayBoolean, int arraySize, int min, i
 	omp_set_num_threads(numberOfThreads);
 #pragma omp parallel
 	{
-#pragma omp for
+#pragma omp for schedule(dynamic)
 		for (int i = 0; i < dividersSize; i++) {
 			if (dividers[i]) {
 				int j = i * floor((min - 1) / i);
@@ -395,7 +443,7 @@ void zbadajMetodaSitaRownoleglaFunkcyjna(int min, int max, int numberOfThreads, 
 }
 
 void wypiszNaglowekPelny() {
-	printf("methodName;lowerBound;upperBound;numberOfThreads;primeCounter;");
+	printf("methodName;<lowerBound,upperBound>;numberOfThreads;primeCounter;");
 	printf("czasPrzetwarzania[ms];przyspieszeniePR;predkoscPrztwarzania[szt/s];efektywnoscPR;\n");
 }
 
@@ -404,6 +452,6 @@ void wypiszWynik(const char methodName[], int lowerBound, int upperBound, int th
 	float przyspieszeniePR = (float)referenceClock/methodClock;
 	long predkoscPrztwarzania = (upperBound - lowerBound + 1) / czasPrzetwarzania;
 	float efektywnoscPR = przyspieszeniePR / threadNumber;
-	printf("%s;%d;%d;%d;%d;", methodName, lowerBound, upperBound, threadNumber, primeCounter);
+	printf("%s;<%d,%d>;%d;%d;", methodName, lowerBound, upperBound, threadNumber, primeCounter);
 	printf("%d;%f;%d;%f;\n", czasPrzetwarzania, przyspieszeniePR, predkoscPrztwarzania, efektywnoscPR);
 }
