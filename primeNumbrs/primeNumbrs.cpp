@@ -32,9 +32,9 @@ int main(int argc, char* argv[])
 
 	//int primeArraySize = metodaDzielacaSekwencyjna(arrayBoolean, arraySize, min);
 	//int primeArraySize = metodaDzielacaRownolegla(arrayBoolean, arraySize, min);
-	int primeArraySize = metodaSitaSekwencyjna(arrayBoolean, arraySize, min, max);
+	//int primeArraySize = metodaSitaSekwencyjna(arrayBoolean, arraySize, min, max);
 	//int primeArraySize = metodaSitaRownoleglaDomenowa(arrayBoolean, arraySize, min, max);
-	//int primeArraySize = metodaSitaRownoleglaFunkcyjna(arrayBoolean, arraySize, min, max);
+	int primeArraySize = metodaSitaRownoleglaFunkcyjna(arrayBoolean, arraySize, min, max);
 
 	duration = clock() - duration;
 	printf("It took me %d clicks (%f seconds).\n", duration, ((float)duration) / CLOCKS_PER_SEC);
@@ -190,7 +190,9 @@ int metodaSitaRownoleglaDomenowa(bool*& arrayBoolean, int arraySize, int min, in
 		int threadMax = omp_get_max_threads();//
 		int threadId = omp_get_thread_num();//
 		int minIndex = min + threadId * arraySize / threadMax;//
-		int maxIndex = min + (threadId + 1) * arraySize / threadMax + 1;//
+		int maxIndex = min + (threadId + 1) * arraySize / threadMax - 1;//
+
+		//printf("threadMax=%d threadId=%d minIndex=%d maxIndex=%d \n", threadMax, threadId, minIndex, maxIndex);
 
 		// Filter non-prime from arrayBoolean
 		for (int i = 2; i < dividersSize; i++) {
@@ -222,12 +224,13 @@ int metodaSitaRownoleglaFunkcyjna(bool*& arrayBoolean, int arraySize, int min, i
 	bool* dividers = new bool[dividersSize];
 	computeDividers(dividers, dividersSize);
 
+	int primeCounter = 0;
+
+	// Filter non-prime from arrayBoolean
 #pragma omp parallel
 	{
-
-		// Filter non-prime from arrayBoolean
-#pragma omp for schedule(dynamic)
-		for (int i = 2; i < dividersSize; i++) {
+#pragma omp for
+		for (int i = 0; i < dividersSize; i++) {
 			if (dividers[i]) {
 				int j = i * floor((min - 1) / i);
 				if (j < i) {
@@ -242,8 +245,20 @@ int metodaSitaRownoleglaFunkcyjna(bool*& arrayBoolean, int arraySize, int min, i
 				}//while
 			}//if dividers
 		}//for i
+
+		//count primes 
+		int localPrimeCounter = 0;
+	#pragma omp for nowait
+		for (int i = 0; i < arraySize; i++){
+			if (true == arrayBoolean[i]) {
+				localPrimeCounter++;
+			}//if
+		}//for
+	#pragma omp atomic
+		primeCounter += localPrimeCounter;
 	}//pragma omp parallel
-	return countPrimes(arrayBoolean, arraySize);
+
+	return primeCounter;
 }
 
 void printArrayBoolean(bool* arrayBoolean, int arraySize)
