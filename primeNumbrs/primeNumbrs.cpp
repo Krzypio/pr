@@ -24,17 +24,44 @@ void wypiszNaglowek();
 void wypiszWynik(const char methodName[], int lowerBound, int upperBound, int threadNumber, int primeCounter, clock_t clockCliks);
 
 void zbadajMetodaDzielacaSekwencyjna(int min, int max);
-void zbadajMetodaDzielacaRownolegla(int min, int max, int threadsNumber);
+void zbadajMetodaDzielacaRownolegla(int min, int max, int numberOfThreads);
 void zbadajMetodaSitaSekwencyjna(int min, int max);
-void zbadajSitaRownoleglaDomenowa(int min, int max, int threadsNumber);
-void zbadajSitaRownoleglaFunkcyjna(int min, int max, int threadsNumber);
+void zbadajSitaRownoleglaDomenowa(int min, int max, int numberOfThreads);
+void zbadajSitaRownoleglaFunkcyjna(int min, int max, int numberOfThreads);
+void wykonajAnalize(int lowerBound, int upperBound);
 //----------------------------
+
 
 int main(int argc, char* argv[])
 {
-	const int origMin = 2;
-	const int origMax = 10'000'000;
+	wykonajAnalize(2, 100'000);
+
+	/*int min = 0;
+	int max = 100'000;
+	int numberOfThreads = 8;
+	 
+	clock_t clockCliks = clock();
+
+	const int arraySize = max - min + 1;
+	bool* arrayBoolean = new bool[arraySize];
+
+	//int primeArraySize = metodaDzielacaSekwencyjna(arrayBoolean, arraySize, min);
+	//int primeArraySize = metodaDzielacaRownolegla(arrayBoolean, arraySize, min, numberOfThreads);
+	//int primeArraySize = metodaSitaSekwencyjna(arrayBoolean, arraySize, min, max);
+	//int primeArraySize = metodaSitaRownoleglaDomenowa(arrayBoolean, arraySize, min, max, numberOfThreads);
+	int primeArraySize = metodaSitaRownoleglaFunkcyjna(arrayBoolean, arraySize, min, max, numberOfThreads);
 	
+	printf("\tIt took me %d clicks (%f seconds).\n", clockCliks,((float)clockCliks) / CLOCKS_PER_SEC);
+
+	clockCliks = clock() - clockCliks;
+
+	int* primeArray = convertBoolToIntPrimeArray(arrayBoolean, arraySize, primeArraySize, min);
+	printf("\tCount of primary numbers in range <%d;%d>: %d\n", min, max, primeArraySize);
+	printArrayInt(primeArray, primeArraySize);*/
+}
+
+void wykonajAnalize(int lowerBound, int upperBound){
+
 	int threadsNumber = 0;
 	int min = 0;
 	int max = 0;
@@ -42,8 +69,8 @@ int main(int argc, char* argv[])
 	wypiszNaglowek();
 
 	//Wariant A: od 2 do max
-	min = origMin;
-	max = origMax;
+	min = lowerBound;
+	max = upperBound;
 
 	zbadajMetodaDzielacaSekwencyjna(min, max);
 	zbadajMetodaSitaSekwencyjna(min, max);
@@ -69,8 +96,8 @@ int main(int argc, char* argv[])
 	zbadajSitaRownoleglaFunkcyjna(min, max, threadsNumber);
 
 	//Wariant B: od max/2 do max
-	min = origMax/2;
-	max = origMax;
+	min = upperBound / 2;
+	max = upperBound;
 
 	zbadajMetodaDzielacaSekwencyjna(min, max);
 	zbadajMetodaSitaSekwencyjna(min, max);
@@ -97,7 +124,7 @@ int main(int argc, char* argv[])
 
 	//Wariant C: od 2 do max/2
 	min = 2;
-	max = origMax/2;
+	max = upperBound / 2;
 
 	zbadajMetodaDzielacaSekwencyjna(min, max);
 	zbadajMetodaSitaSekwencyjna(min, max);
@@ -399,14 +426,14 @@ void zbadajMetodaDzielacaSekwencyjna(int min, int max) {
 
 	
 }
-void zbadajMetodaDzielacaRownolegla(int min, int max, int threadsNumber) {
+void zbadajMetodaDzielacaRownolegla(int min, int max, int numberOfThreads) {
 	const int arraySize = max - min + 1;
 	bool* arrayBoolean = new bool[arraySize];
 
 	clock_t clockCliks = clock();
-	int primeArraySize = metodaDzielacaRownolegla(arrayBoolean, arraySize, min, threadsNumber);
+	int primeArraySize = metodaDzielacaRownolegla(arrayBoolean, arraySize, min, numberOfThreads);
 	clockCliks = clock() - clockCliks;
-	wypiszWynik("metodaDzielacaRownolegla", min, max, threadsNumber, primeArraySize, clockCliks);
+	wypiszWynik("metodaDzielacaRownolegla", min, max, numberOfThreads, primeArraySize, clockCliks);
 }
 void zbadajMetodaSitaSekwencyjna(int min, int max) {
 	const int arraySize = max - min + 1;
@@ -417,21 +444,21 @@ void zbadajMetodaSitaSekwencyjna(int min, int max) {
 	clockCliks = clock() - clockCliks;
 	wypiszWynik("metodaSitaSekwencyjna", min, max, 1, primeArraySize, clockCliks);
 }
-void zbadajSitaRownoleglaDomenowa(int min, int max, int threadsNumber) {
+void zbadajSitaRownoleglaDomenowa(int min, int max, int numberOfThreads) {
 	const int arraySize = max - min + 1;
 	bool* arrayBoolean = new bool[arraySize];
 
 	clock_t clockCliks = clock();
-	int primeArraySize = metodaSitaRownoleglaDomenowa(arrayBoolean, arraySize, min, max, threadsNumber);
+	int primeArraySize = metodaSitaRownoleglaDomenowa(arrayBoolean, arraySize, min, max, numberOfThreads);
 	clockCliks = clock() - clockCliks;
-	wypiszWynik("metodaSitaRownoleglaDomenowa", min, max, threadsNumber, primeArraySize, clockCliks);
+	wypiszWynik("metodaSitaRownoleglaDomenowa", min, max, numberOfThreads, primeArraySize, clockCliks);
 }
 void zbadajSitaRownoleglaFunkcyjna(int min, int max, int threadsNumber) {
 	const int arraySize = max - min + 1;
 	bool* arrayBoolean = new bool[arraySize];
 
 	clock_t clockCliks = clock();
-		int primeArraySize = metodaSitaRownoleglaFunkcyjna(arrayBoolean, arraySize, min, max, threadsNumber);
+	int primeArraySize = metodaSitaRownoleglaFunkcyjna(arrayBoolean, arraySize, min, max, threadsNumber);
 	clockCliks = clock() - clockCliks;
 	wypiszWynik("metodaSitaRownoleglaFunkcyjna", min, max, threadsNumber, primeArraySize, clockCliks);
 }
