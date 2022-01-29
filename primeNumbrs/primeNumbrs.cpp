@@ -174,8 +174,15 @@ int metodaSitaRownoleglaDomenowa(bool*& arrayBoolean, int arraySize, int min, in
 	initializeArrayBoolean(arrayBoolean, arraySize, min, max);
 	int dividersSize = (int)sqrt(max) + 1;
 
+	int nonPrimeCounter = 0;
+	if (min <= 0)
+		nonPrimeCounter++;
+	if (min <= 1)
+		nonPrimeCounter++;
+
 #pragma omp parallel
 	{
+		int localNonPrimeCounter = 0;
 		//initialize dividers
 		bool* dividers = new bool[dividersSize];
 		computeDividers(dividers, dividersSize);
@@ -183,7 +190,7 @@ int metodaSitaRownoleglaDomenowa(bool*& arrayBoolean, int arraySize, int min, in
 		int threadMax = omp_get_max_threads();//
 		int threadId = omp_get_thread_num();//
 		int minIndex = min + threadId * arraySize / threadMax;//
-		int maxIndex = min + (threadId + 1) * arraySize / threadMax;//
+		int maxIndex = min + (threadId + 1) * arraySize / threadMax + 1;//
 
 		// Filter non-prime from arrayBoolean
 		for (int i = 2; i < dividersSize; i++) {
@@ -197,13 +204,16 @@ int metodaSitaRownoleglaDomenowa(bool*& arrayBoolean, int arraySize, int min, in
 					int index = j - min;
 					if (arrayBoolean[index]) {
 						arrayBoolean[index] = false;
+						localNonPrimeCounter++;
 					}//if
 				}//while
 			}//if dividers
 		}//for i
+#pragma omp atomic
+		nonPrimeCounter += localNonPrimeCounter;
 	}//pragma omp parallel
 
-	return countPrimes(arrayBoolean, arraySize);
+	return max - min + 1 - nonPrimeCounter;
 }
 int metodaSitaRownoleglaFunkcyjna(bool*& arrayBoolean, int arraySize, int min, int max) {
 	initializeArrayBoolean(arrayBoolean, arraySize, min, max);

@@ -1,5 +1,5 @@
 ﻿  primeNumbrs.cpp
 C:\code\studia\pr\primeNumbrs\primeNumbrs\primeNumbrs.cpp(156,10): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\code\studia\pr\primeNumbrs\primeNumbrs\primeNumbrs.cpp(191,11): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\code\studia\pr\primeNumbrs\primeNumbrs\primeNumbrs.cpp(222,11): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\code\studia\pr\primeNumbrs\primeNumbrs\primeNumbrs.cpp(198,11): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\code\studia\pr\primeNumbrs\primeNumbrs\primeNumbrs.cpp(232,11): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   primeNumbrs.vcxproj -> C:\code\studia\pr\primeNumbrs\x64\Debug\primeNumbrs.exe
