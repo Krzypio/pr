@@ -311,7 +311,8 @@ int metodaSitaRownoleglaDomenowa(bool*& arrayBoolean, int arraySize, int min, in
 
 	return max - min + 1 - nonPrimeCounter;
 }
-int metodaSitaRownoleglaFunkcyjna(bool*& arrayBoolean, int arraySize, int min, int max, int numberOfThreads) {
+int metodaSitaRownoleglaFunkcyjna(bool*& arrayBoolean, int arraySize, 
+	int min, int max, int numberOfThreads) {
 	initializeArrayBoolean(arrayBoolean, arraySize, min, max);
 	int dividersSize = (int)sqrt(max) + 1;
 
