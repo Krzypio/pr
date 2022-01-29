@@ -23,7 +23,7 @@ void printArrayInt(int* arrayInt, int arraySize);
 int main(int argc, char* argv[])
 {
 	const int min = 0;
-	const int max = 1'000'000;
+	const int max = 10'000'000;
 	const int arraySize = max - min + 1;
 	bool* arrayBoolean = new bool[arraySize];
 
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 
 	int* primeArray = convertBoolToIntPrimeArray(arrayBoolean, arraySize, primeArraySize, min);
 	printf("Count of primary numbers in range <%d;%d>: %d\n", min, max, primeArraySize);
-	printArrayInt(primeArray, primeArraySize);
+	//printArrayInt(primeArray, primeArraySize);
 }
 
 int isPrime(int number) {
@@ -108,25 +108,34 @@ void computeDividers(bool*& dividers, int dividersSize) {
 }
 
 int metodaDzielacaSekwencyjna(bool*& arrayBoolean, int arraySize, int min) {
+	int primeCounter = 0;
 	for (int i = 0; i < arraySize; i++) {
-		arrayBoolean[i] = isPrime(min + i);
+		if (isPrime(min + i)) {
+			arrayBoolean[i] = true;
+			primeCounter++;
+		}//if
 	}//for
-	return countPrimes(arrayBoolean, arraySize);
+	return primeCounter;
 }//metodaDzielacaSekwencyjna()
 int metodaDzielacaRownolegla(bool*& arrayBoolean, int arraySize, int min) {
+	int primeCounter = 0;
 #pragma omp parallel
 	{
+		int localPrimeCounter = 0;
 #pragma omp for schedule (dynamic, 100)
 		for (int i = 0; i < arraySize; i++) {
 			if (isPrime(min + i)) {
 				arrayBoolean[i] = true;
+				localPrimeCounter++;
 			}//if
 			else {
 				arrayBoolean[i] = false;
 			}//else
 		}//for
+#pragma omp atomic
+		primeCounter += localPrimeCounter;
 	}//pragma omp parallel
-	return countPrimes(arrayBoolean, arraySize);
+	return primeCounter;
 }//metodaDzielacaRownolegla()
 int metodaSitaSekwencyjna(bool*& arrayBoolean, int arraySize, int min, int max) {
 	initializeArrayBoolean(arrayBoolean, arraySize, min, max);
@@ -135,8 +144,14 @@ int metodaSitaSekwencyjna(bool*& arrayBoolean, int arraySize, int min, int max) 
 	bool* dividers = new bool[dividersSize];
 	computeDividers(dividers, dividersSize);
 
+	int nonPrimeCounter = 0;
+	if (min <= 0)
+		nonPrimeCounter++;
+	if (min <= 1)
+		nonPrimeCounter++;
+		
 	// Filter non-prime from arrayBoolean
-	for (int i = 2; i < dividersSize; i++) {
+	for (int i = 0; i < dividersSize; i++) {
 		if (dividers[i]) {
 			int j = i * floor((min - 1) / i);
 			if (j < i) {
@@ -147,11 +162,13 @@ int metodaSitaSekwencyjna(bool*& arrayBoolean, int arraySize, int min, int max) 
 				int index = j - min;
 				if (arrayBoolean[index]) {
 					arrayBoolean[index] = false;
+					nonPrimeCounter++;
+
 				}//if
 			}//while
 		}//if dividers
 	}//for i
-	return countPrimes(arrayBoolean, arraySize);
+	return max - min + 1 - nonPrimeCounter;
 }
 int metodaSitaRownoleglaDomenowa(bool*& arrayBoolean, int arraySize, int min, int max) {
 	initializeArrayBoolean(arrayBoolean, arraySize, min, max);
