@@ -97,7 +97,7 @@ void computeDividers(bool*& dividers, int dividersSize) {
 	if (dividersSize > 1)
 		dividers[1] = false;
 
-	// F i l t e r non−prime d i v i d e r s
+	// Filter non-prime from dividers
 	for (int i = 2; i < dividersSize; i++) {
 		for (int j = i * i; j < dividersSize; j = j + i) {
 			if (true == dividers[j]) {
